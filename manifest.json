@@ -1,0 +1,92 @@
+{
+    "name": "Estudio de Belleza PWA",
+    "short_name": "EstudioBelleza",
+    "description": "Servicios profesionales de belleza y reserva de turnos online",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#fef7f7",
+    "theme_color": "#ff6b9d",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "icons/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-128x128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "categories": [
+        "health",
+        "beauty",
+        "lifestyle"
+    ],
+    "shortcuts": [
+        {
+            "name": "Reservar Turno",
+            "short_name": "Reservar",
+            "description": "Reservá un turno rápidamente",
+            "url": "/#appointments",
+            "icons": [
+                {
+                    "src": "icons/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Servicios",
+            "short_name": "Servicios",
+            "description": "Ver servicios disponibles",
+            "url": "/#services",
+            "icons": [
+                {
+                    "src": "icons/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ]
+}

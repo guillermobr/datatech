@@ -1,0 +1,5 @@
+<!-- Simple SVG Favicon -->
+<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" fill="#ff6b9d" rx="4"/>
+  <text x="16" y="22" text-anchor="middle" font-size="16" fill="white" font-family="Arial, sans-serif">✨</text>
+</svg>

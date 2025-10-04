@@ -1,0 +1,5 @@
+<!-- Simple SVG icon that can be converted to PNG -->
+<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#ff6b9d" rx="20"/>
+  <text x="96" y="120" text-anchor="middle" font-size="80" fill="white" font-family="Arial, sans-serif">✨</text>
+</svg>
