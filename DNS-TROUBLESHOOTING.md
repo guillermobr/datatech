@@ -29,7 +29,7 @@ Tipo: A
 Nombre: @
 Valor: 185.199.108.153
 
-Tipo: A  
+Tipo: A
 Nombre: @
 Valor: 185.199.109.153
 
@@ -85,7 +85,7 @@ nslookup www.esteticamdq.com
 
 ### URLs para verificar:
 - **Verificación DNS**: `https://dnschecker.org/`
-- **Tu repositorio**: `https://github.com/guillermobr/datatech`  
+- **Tu repositorio**: `https://github.com/guillermobr/datatech`
 - **GitHub Pages**: `https://guillermobr.github.io/datatech`
 
 ---
@@ -104,7 +104,7 @@ nslookup www.esteticamdq.com
 
 ### Proveedores de dominio comunes y dónde configurar DNS:
 
-**GoDaddy**: 
+**GoDaddy**:
 - Panel de control → DNS → Administrar zonas DNS
 
 **Namecheap**:
@@ -121,7 +121,7 @@ nslookup www.esteticamdq.com
 ## ✅ **Checklist de Verificación**
 
 - [ ] GitHub Pages habilitado en Settings
-- [ ] Rama main seleccionada como source  
+- [ ] Rama main seleccionada como source
 - [ ] PWA accesible en https://guillermobr.github.io/datatech
 - [ ] DNS configurado correctamente (si usas dominio personalizado)
 - [ ] HTTPS habilitado
