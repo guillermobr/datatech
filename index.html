@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Shop - Book Your Appointment</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ff6b9d">
+    <meta name="description" content="Professional beauty services and online appointment booking">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="logo">✨ Beauty Studio</h1>
+                <div class="nav-menu">
+                    <a href="#services" class="nav-link">Services</a>
+                    <a href="#appointments" class="nav-link">Book Now</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Professional Beauty Services</h2>
+                <p>Transform your look with our expert beauty treatments</p>
+                <button class="cta-button" onclick="scrollToSection('appointments')">Book Appointment</button>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="services">
+            <div class="container">
+                <h2>Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card" data-service="haircut" data-duration="60" data-price="50">
+                        <h3>Haircut & Styling</h3>
+                        <p class="duration">60 minutes</p>
+                        <p class="price">$50</p>
+                        <p>Professional haircut and styling service</p>
+                    </div>
+                    <div class="service-card" data-service="facial" data-duration="90" data-price="75">
+                        <h3>Facial Treatment</h3>
+                        <p class="duration">90 minutes</p>
+                        <p class="price">$75</p>
+                        <p>Deep cleansing and rejuvenating facial</p>
+                    </div>
+                    <div class="service-card" data-service="manicure" data-duration="45" data-price="35">
+                        <h3>Manicure</h3>
+                        <p class="duration">45 minutes</p>
+                        <p class="price">$35</p>
+                        <p>Complete nail care and polish</p>
+                    </div>
+                    <div class="service-card" data-service="massage" data-duration="60" data-price="80">
+                        <h3>Relaxing Massage</h3>
+                        <p class="duration">60 minutes</p>
+                        <p class="price">$80</p>
+                        <p>Full body relaxation massage</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appointments Section -->
+        <section id="appointments" class="appointments">
+            <div class="container">
+                <h2>Book Your Appointment</h2>
+                <div class="booking-form">
+                    <div class="form-step active" id="step1">
+                        <h3>Select Service</h3>
+                        <div class="service-selection">
+                            <!-- Services will be populated by JavaScript -->
+                        </div>
+                        <button class="next-button" onclick="nextStep(2)">Next</button>
+                    </div>
+
+                    <div class="form-step" id="step2">
+                        <h3>Select Date & Time</h3>
+                        <div class="date-time-selection">
+                            <div class="date-picker">
+                                <label for="appointment-date">Date:</label>
+                                <input type="date" id="appointment-date" min="">
+                            </div>
+                            <div class="time-slots">
+                                <h4>Available Times:</h4>
+                                <div class="time-grid" id="time-slots">
+                                    <!-- Time slots will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-buttons">
+                            <button class="prev-button" onclick="prevStep(1)">Previous</button>
+                            <button class="next-button" onclick="nextStep(3)">Next</button>
+                        </div>
+                    </div>
+
+                    <div class="form-step" id="step3">
+                        <h3>Your Details</h3>
+                        <div class="customer-details">
+                            <input type="text" id="customer-name" placeholder="Full Name" required>
+                            <input type="email" id="customer-email" placeholder="Email" required>
+                            <input type="tel" id="customer-phone" placeholder="Phone Number" required>
+                            <textarea id="customer-notes" placeholder="Special requests or notes (optional)" rows="3"></textarea>
+                        </div>
+                        <div class="appointment-summary">
+                            <h4>Appointment Summary:</h4>
+                            <div id="booking-summary"></div>
+                        </div>
+                        <div class="step-buttons">
+                            <button class="prev-button" onclick="prevStep(2)">Previous</button>
+                            <button class="book-button" onclick="confirmBooking()">Confirm Booking</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>📍 Address</h3>
+                        <p>123 Beauty Street<br>City, State 12345</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>📞 Phone</h3>
+                        <p>(555) 123-4567</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>✉️ Email</h3>
+                        <p>info@beautystudio.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>🕒 Hours</h3>
+                        <p>Mon-Fri: 9AM-7PM<br>Sat: 9AM-5PM<br>Sun: Closed</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Beauty Studio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>✅ Booking Confirmed!</h2>
+            <p>Your appointment has been successfully booked. You will receive a confirmation email shortly.</p>
+            <div id="confirmation-details"></div>
+        </div>
+    </div>
+
+    <!-- PWA Install Banner -->
+    <div id="install-banner" class="install-banner hidden">
+        <p>Install Beauty Studio app for a better experience!</p>
+        <button id="install-button">Install</button>
+        <button id="dismiss-button">×</button>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
