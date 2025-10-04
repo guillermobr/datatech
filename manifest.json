@@ -2,12 +2,12 @@
     "name": "Estudio de Belleza PWA",
     "short_name": "EstudioBelleza",
     "description": "Servicios profesionales de belleza y reserva de turnos online",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#fef7f7",
     "theme_color": "#ff6b9d",
     "orientation": "portrait-primary",
-    "scope": "/",
+    "scope": "./",
     "icons": [
         {
             "src": "icons/icon-72x72.png",

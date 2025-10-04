@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Validation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .test {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .pass {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .fail {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .testing {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 PWA Validation Test</h1>
+    <p>Esta página verifica si tu PWA cumple los requisitos básicos.</p>
+
+    <div id="tests">
+        <div class="test testing" id="https-test">
+            🔐 <strong>HTTPS:</strong> <span id="https-result">Testing...</span>
+        </div>
+
+        <div class="test testing" id="manifest-test">
+            📋 <strong>Manifest:</strong> <span id="manifest-result">Testing...</span>
+        </div>
+
+        <div class="test testing" id="sw-test">
+            ⚙️ <strong>Service Worker:</strong> <span id="sw-result">Testing...</span>
+        </div>
+
+        <div class="test testing" id="icons-test">
+            🎨 <strong>Icons:</strong> <span id="icons-result">Testing...</span>
+        </div>
+
+        <div class="test testing" id="install-test">
+            📱 <strong>Installable:</strong> <span id="install-result">Testing...</span>
+        </div>
+    </div>
+
+    <div id="recommendations" style="margin-top: 20px;">
+        <h2>🛠 Recomendaciones:</h2>
+        <div id="rec-list"></div>
+    </div>
+
+    <script>
+        const tests = {
+            https: () => location.protocol === 'https:',
+            manifest: async () => {
+                try {
+                    const response = await fetch('./manifest.json');
+                    const manifest = await response.json();
+                    return manifest.name && manifest.start_url && manifest.display;
+                } catch (e) {
+                    return false;
+                }
+            },
+            serviceWorker: () => 'serviceWorker' in navigator,
+            icons: async () => {
+                try {
+                    const img = new Image();
+                    img.src = './icons/icon-192x192.png';
+                    return new Promise((resolve) => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                    });
+                } catch (e) {
+                    return false;
+                }
+            },
+            installable: () => {
+                return new Promise((resolve) => {
+                    let resolved = false;
+                    window.addEventListener('beforeinstallprompt', () => {
+                        if (!resolved) {
+                            resolved = true;
+                            resolve(true);
+                        }
+                    });
+                    setTimeout(() => {
+                        if (!resolved) {
+                            resolved = true;
+                            resolve(false);
+                        }
+                    }, 3000);
+                });
+            }
+        };
+
+        async function runTests() {
+            const results = {};
+            const recommendations = [];
+
+            // HTTPS Test
+            results.https = tests.https();
+            updateTest('https', results.https, results.https ? 'Sitio seguro ✅' : 'Necesita HTTPS ❌');
+            if (!results.https) recommendations.push('Habilitar HTTPS en tu hosting');
+
+            // Manifest Test
+            results.manifest = await tests.manifest();
+            updateTest('manifest', results.manifest, results.manifest ? 'Manifest válido ✅' : 'Manifest faltante/inválido ❌');
+            if (!results.manifest) recommendations.push('Verificar que manifest.json existe y es válido');
+
+            // Service Worker Test
+            results.serviceWorker = tests.serviceWorker();
+            updateTest('sw', results.serviceWorker, results.serviceWorker ? 'Soporte disponible ✅' : 'No soportado ❌');
+            if (!results.serviceWorker) recommendations.push('Navegador no soporta Service Workers');
+
+            // Icons Test
+            results.icons = await tests.icons();
+            updateTest('icons', results.icons, results.icons ? 'Íconos disponibles ✅' : 'Íconos faltantes ❌');
+            if (!results.icons) recommendations.push('Verificar que los íconos existen y son válidos');
+
+            // Install Test
+            results.installable = await tests.installable();
+            updateTest('install', results.installable, results.installable ? 'Install prompt disponible ✅' : 'No se detectó prompt automático ⚠️');
+            if (!results.installable) recommendations.push('Instalar manualmente desde menú del navegador');
+
+            // Show recommendations
+            const recList = document.getElementById('rec-list');
+            if (recommendations.length === 0) {
+                recList.innerHTML = '<p style="color: green;">🎉 ¡Tu PWA cumple todos los requisitos básicos!</p>';
+            } else {
+                recList.innerHTML = recommendations.map(rec => `<p>• ${rec}</p>`).join('');
+            }
+        }
+
+        function updateTest(testId, passed, message) {
+            const testEl = document.getElementById(`${testId}-test`);
+            const resultEl = document.getElementById(`${testId}-result`);
+
+            testEl.className = `test ${passed ? 'pass' : 'fail'}`;
+            resultEl.textContent = message;
+        }
+
+        // Run tests when page loads
+        runTests();
+    </script>
+</body>
+
+</html>

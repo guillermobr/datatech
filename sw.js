@@ -1,12 +1,13 @@
-const CACHE_NAME = 'beauty-studio-v1';
+const CACHE_NAME = 'beauty-studio-v2';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/manifest.json',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    './',
+    './index.html',
+    './styles.css',
+    './app.js',
+    './manifest.json',
+    './icons/icon-192x192.png',
+    './icons/icon-512x512.png',
+    './favicon.svg'
 ];
 
 // Install event

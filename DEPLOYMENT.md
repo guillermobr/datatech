@@ -13,7 +13,13 @@
 ### Paso 2: Verificar el Despliegue
 - Tu PWA estará disponible en: `https://guillermobr.github.io/datatech`
 - El despliegue puede tardar unos minutos
-- GitHub te enviará un email cuando esté listo
+- **IMPORTANTE**: Si tenés problemas con dominio personalizado, ver `DNS-TROUBLESHOOTING.md`
+
+### Paso 2b: Configurar Dominio Personalizado (Opcional)
+Si querés usar `esteticamdq.com`:
+1. **Primero configurá DNS** (ver DNS-TROUBLESHOOTING.md)
+2. **Esperá 24-48 horas** para propagación DNS
+3. **Luego** agregá el dominio en GitHub Pages Settings
 
 ### Paso 3: Verificar que es una PWA
 1. Abre la URL en Chrome/Edge en móvil
