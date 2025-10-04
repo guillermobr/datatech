@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Generador de Íconos PWA</title>
+</head>
+
+<body>
+    <h1>🎨 Generador de Íconos para PWA</h1>
+    <p>Esta herramienta genera íconos válidos para tu PWA. Haz clic derecho en cada imagen y "Guardar como..."</p>
+
+    <div id="icons-container"></div>
+
+    <button onclick="generateIcons()">Generar Íconos</button>
+    <button onclick="downloadAll()">Preparar Descarga de Todos</button>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        let generatedIcons = [];
+
+        function generateIcons() {
+            const container = document.getElementById('icons-container');
+            container.innerHTML = '';
+            generatedIcons = [];
+
+            sizes.forEach(size => {
+                // Create canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+
+                const ctx = canvas.getContext('2d');
+
+                // Create gradient background
+                const gradient = ctx.createLinearGradient(0, 0, size, size);
+                gradient.addColorStop(0, '#ff6b9d');
+                gradient.addColorStop(1, '#c44569');
+
+                // Fill background
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, size, size);
+
+                // Add rounded corners (clip path)
+                ctx.globalCompositeOperation = 'destination-in';
+                ctx.beginPath();
+                const radius = size * 0.1; // 10% radius
+                ctx.roundRect(0, 0, size, size, radius);
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over';
+
+                // Add sparkle emoji
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size * 0.35}px "Segoe UI Emoji", Arial, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('✨', size / 2, size / 2);
+
+                // Add subtle shadow/glow effect
+                ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                ctx.shadowBlur = size * 0.02;
+                ctx.shadowOffsetX = size * 0.01;
+                ctx.shadowOffsetY = size * 0.01;
+
+                // Convert to blob and create download link
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    generatedIcons.push({
+                        size: size,
+                        url: url,
+                        filename: `icon-${size}x${size}.png`
+                    });
+
+                    // Create display element
+                    const iconDiv = document.createElement('div');
+                    iconDiv.style.cssText = `
+                        display: inline-block;
+                        margin: 10px;
+                        text-align: center;
+                        border: 1px solid #ddd;
+                        padding: 10px;
+                        border-radius: 10px;
+                        background: white;
+                    `;
+
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.cssText = `
+                        width: ${Math.min(size, 128)}px;
+                        height: ${Math.min(size, 128)}px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                    `;
+
+                    const label = document.createElement('p');
+                    label.textContent = `${size}x${size}px`;
+                    label.style.margin = '5px 0';
+
+                    const downloadBtn = document.createElement('a');
+                    downloadBtn.href = url;
+                    downloadBtn.download = `icon-${size}x${size}.png`;
+                    downloadBtn.textContent = 'Descargar';
+                    downloadBtn.style.cssText = `
+                        display: inline-block;
+                        background: #ff6b9d;
+                        color: white;
+                        padding: 5px 10px;
+                        text-decoration: none;
+                        border-radius: 3px;
+                        font-size: 12px;
+                    `;
+
+                    iconDiv.appendChild(img);
+                    iconDiv.appendChild(label);
+                    iconDiv.appendChild(downloadBtn);
+
+                    container.appendChild(iconDiv);
+                }, 'image/png', 1.0);
+            });
+        }
+
+        function downloadAll() {
+            if (generatedIcons.length === 0) {
+                alert('Primero genera los íconos');
+                return;
+            }
+
+            // Create instructions
+            const instructions = document.createElement('div');
+            instructions.style.cssText = `
+                background: #f0f8ff;
+                padding: 20px;
+                margin: 20px 0;
+                border-radius: 10px;
+                border: 2px solid #007bff;
+            `;
+
+            instructions.innerHTML = `
+                <h3>📝 Instrucciones para Instalar:</h3>
+                <ol>
+                    <li><strong>Descarga todos los íconos</strong> usando los botones "Descargar" arriba</li>
+                    <li><strong>Ve a tu carpeta</strong> <code>icons/</code> en el proyecto</li>
+                    <li><strong>Reemplaza todos los archivos</strong> PNG existentes</li>
+                    <li><strong>Asegurate</strong> que los nombres coincidan exactamente</li>
+                    <li><strong>Sube los cambios</strong> a GitHub</li>
+                    <li><strong>Espera 2-3 minutos</strong> y prueba instalar tu PWA</li>
+                </ol>
+                <p><strong>🎯 Resultado:</strong> Tu PWA ahora debería poder instalarse correctamente en móviles y desktop.</p>
+            `;
+
+            document.body.appendChild(instructions);
+
+            // Auto-trigger downloads (may be blocked by popup blocker)
+            setTimeout(() => {
+                generatedIcons.forEach((icon, index) => {
+                    setTimeout(() => {
+                        const a = document.createElement('a');
+                        a.href = icon.url;
+                        a.download = icon.filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }, index * 500); // Stagger downloads
+                });
+            }, 1000);
+        }
+
+        // Auto-generate on load
+        window.addEventListener('load', generateIcons);
+    </script>
+</body>
+
+</html>

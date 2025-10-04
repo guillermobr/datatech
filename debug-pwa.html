@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Debug - Estudio de Belleza</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .pass {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .debug-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #c44569;
+        }
+
+        .install-test {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 PWA Debug Tool</h1>
+    <p>Esta herramienta diagnostica por qué tu PWA no se puede instalar.</p>
+
+    <div class="install-test">
+        <h2>🧪 Test de Instalación</h2>
+        <button id="test-install" onclick="testInstall()">Probar Instalación</button>
+        <button onclick="window.location.href='./index.html'">Volver a la App</button>
+    </div>
+
+    <div class="debug-panel">
+        <h2>📊 Estado del Sistema</h2>
+        <div id="system-status"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>📋 Manifest Analysis</h2>
+        <div id="manifest-status"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>⚙️ Service Worker Status</h2>
+        <div id="sw-status"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>🎨 Icons Check</h2>
+        <div id="icons-status"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>📱 Install Criteria</h2>
+        <div id="install-status"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>🔧 Soluciones Recomendadas</h2>
+        <div id="solutions"></div>
+    </div>
+
+    <script>
+        let deferredPrompt = null;
+        const debug = {
+            system: {},
+            manifest: {},
+            serviceWorker: {},
+            icons: {},
+            install: {},
+            solutions: []
+        };
+
+        // Capture install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            debug.install.promptAvailable = true;
+            updateDisplay();
+        });
+
+        window.addEventListener('appinstalled', () => {
+            debug.install.installed = true;
+            updateDisplay();
+        });
+
+        async function runDiagnostics() {
+            // System Info
+            debug.system = {
+                userAgent: navigator.userAgent,
+                isSecure: location.protocol === 'https:',
+                isLocalhost: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+                hasServiceWorker: 'serviceWorker' in navigator,
+                browser: getBrowserInfo(),
+                isStandalone: window.matchMedia('(display-mode: standalone)').matches,
+                url: location.href
+            };
+
+            // Manifest Check
+            try {
+                const manifestResponse = await fetch('./manifest.json');
+                const manifest = await manifestResponse.json();
+                debug.manifest = {
+                    exists: true,
+                    valid: true,
+                    data: manifest,
+                    hasRequiredFields: !!(manifest.name && manifest.start_url && manifest.display),
+                    hasIcons: !!(manifest.icons && manifest.icons.length > 0),
+                    displayMode: manifest.display,
+                    startUrl: manifest.start_url,
+                    scope: manifest.scope
+                };
+            } catch (e) {
+                debug.manifest = {
+                    exists: false,
+                    valid: false,
+                    error: e.message
+                };
+            }
+
+            // Service Worker Check
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    debug.serviceWorker = {
+                        supported: true,
+                        registered: !!registration,
+                        active: !!(registration && registration.active),
+                        scope: registration ? registration.scope : null,
+                        scriptURL: registration ? registration.active?.scriptURL : null
+                    };
+                } catch (e) {
+                    debug.serviceWorker = {
+                        supported: true,
+                        registered: false,
+                        error: e.message
+                    };
+                }
+            } else {
+                debug.serviceWorker = {
+                    supported: false
+                };
+            }
+
+            // Icons Check
+            const iconTests = ['72x72', '192x192', '512x512'];
+            debug.icons.tests = {};
+
+            for (const size of iconTests) {
+                try {
+                    const response = await fetch(`./icons/icon-${size}.png`);
+                    debug.icons.tests[size] = {
+                        exists: response.ok,
+                        size: response.ok ? response.headers.get('content-length') : 0
+                    };
+                } catch (e) {
+                    debug.icons.tests[size] = {
+                        exists: false,
+                        error: e.message
+                    };
+                }
+            }
+
+            // Install Criteria
+            debug.install = {
+                ...debug.install,
+                meetsHTTPS: debug.system.isSecure || debug.system.isLocalhost,
+                hasManifest: debug.manifest.valid,
+                hasServiceWorker: debug.serviceWorker.registered,
+                hasValidIcons: debug.icons.tests['192x192']?.exists && debug.icons.tests['512x512']?.exists,
+                isEngaged: checkUserEngagement(),
+                promptAvailable: !!deferredPrompt
+            };
+
+            generateSolutions();
+            updateDisplay();
+        }
+
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+            if (ua.includes('Edge')) return 'Edge';
+            return 'Unknown';
+        }
+
+        function checkUserEngagement() {
+            // Simple check - in real app, this would be more sophisticated
+            return localStorage.getItem('userEngagement') === 'true';
+        }
+
+        function generateSolutions() {
+            debug.solutions = [];
+
+            if (!debug.system.isSecure && !debug.system.isLocalhost) {
+                debug.solutions.push({
+                    type: 'error',
+                    title: 'HTTPS Requerido',
+                    description: 'Las PWA requieren HTTPS. Tu sitio debe estar en GitHub Pages o un hosting con SSL.',
+                    action: 'Verificar que la URL tenga https://'
+                });
+            }
+
+            if (!debug.manifest.valid) {
+                debug.solutions.push({
+                    type: 'error',
+                    title: 'Manifest Inválido',
+                    description: 'El archivo manifest.json no existe o tiene errores.',
+                    action: 'Verificar que manifest.json sea válido'
+                });
+            }
+
+            if (!debug.serviceWorker.registered) {
+                debug.solutions.push({
+                    type: 'error',
+                    title: 'Service Worker No Registrado',
+                    description: 'El Service Worker es requerido para PWAs.',
+                    action: 'Verificar que sw.js exista y se registre correctamente'
+                });
+            }
+
+            if (!debug.icons.tests['192x192']?.exists) {
+                debug.solutions.push({
+                    type: 'error',
+                    title: 'Ícono 192x192 Faltante',
+                    description: 'Se requiere un ícono de 192x192 píxeles.',
+                    action: 'Crear/subir icon-192x192.png'
+                });
+            }
+
+            if (!debug.icons.tests['512x512']?.exists) {
+                debug.solutions.push({
+                    type: 'error',
+                    title: 'Ícono 512x512 Faltante',
+                    description: 'Se requiere un ícono de 512x512 píxeles.',
+                    action: 'Crear/subir icon-512x512.png'
+                });
+            }
+
+            if (!debug.install.promptAvailable && debug.system.browser === 'Chrome') {
+                debug.solutions.push({
+                    type: 'warning',
+                    title: 'Install Prompt No Disponible',
+                    description: 'Chrome no muestra el prompt automático. Esto puede deberse a criterios no cumplidos o falta de engagement.',
+                    action: 'Navegar por la app, esperar, o instalar manualmente desde el menú'
+                });
+            }
+
+            if (debug.system.browser === 'Safari') {
+                debug.solutions.push({
+                    type: 'info',
+                    title: 'Safari - Instalación Manual',
+                    description: 'Safari en iOS requiere instalación manual.',
+                    action: 'Usar botón Compartir → "Añadir a pantalla de inicio"'
+                });
+            }
+
+            if (debug.solutions.length === 0) {
+                debug.solutions.push({
+                    type: 'success',
+                    title: '✅ PWA Lista para Instalar',
+                    description: 'Tu PWA cumple todos los requisitos técnicos.',
+                    action: 'Intentar instalación manual o esperar el prompt automático'
+                });
+            }
+        }
+
+        function updateDisplay() {
+            // System Status
+            document.getElementById('system-status').innerHTML = `
+                <div class="status ${debug.system.isSecure || debug.system.isLocalhost ? 'pass' : 'fail'}">
+                    🔐 HTTPS: ${debug.system.isSecure || debug.system.isLocalhost ? 'Activo' : 'Requerido'}
+                </div>
+                <div class="status info">
+                    🌐 Browser: ${debug.system.browser}
+                </div>
+                <div class="status info">
+                    📱 Standalone Mode: ${debug.system.isStandalone ? 'Sí (ya instalado)' : 'No'}
+                </div>
+                <div class="debug-details">
+                    URL: ${debug.system.url}<br>
+                    User Agent: ${debug.system.userAgent}
+                </div>
+            `;
+
+            // Manifest Status
+            document.getElementById('manifest-status').innerHTML = `
+                <div class="status ${debug.manifest.valid ? 'pass' : 'fail'}">
+                    📋 Manifest: ${debug.manifest.valid ? 'Válido' : 'Error'}
+                </div>
+                ${debug.manifest.valid ? `
+                    <div class="debug-details">
+                        Name: ${debug.manifest.data.name}<br>
+                        Start URL: ${debug.manifest.data.start_url}<br>
+                        Display: ${debug.manifest.data.display}<br>
+                        Icons: ${debug.manifest.data.icons?.length || 0} definidos
+                    </div>
+                ` : `
+                    <div class="debug-details">
+                        Error: ${debug.manifest.error || 'Manifest no encontrado'}
+                    </div>
+                `}
+            `;
+
+            // Service Worker Status
+            document.getElementById('sw-status').innerHTML = `
+                <div class="status ${debug.serviceWorker.registered ? 'pass' : 'fail'}">
+                    ⚙️ Service Worker: ${debug.serviceWorker.registered ? 'Registrado' : 'No Registrado'}
+                </div>
+                ${debug.serviceWorker.registered ? `
+                    <div class="debug-details">
+                        Scope: ${debug.serviceWorker.scope}<br>
+                        Script: ${debug.serviceWorker.scriptURL}<br>
+                        Active: ${debug.serviceWorker.active ? 'Sí' : 'No'}
+                    </div>
+                ` : ''}
+            `;
+
+            // Icons Status
+            let iconsHTML = '';
+            Object.entries(debug.icons.tests || {}).forEach(([size, test]) => {
+                iconsHTML += `
+                    <div class="status ${test.exists ? 'pass' : 'fail'}">
+                        🎨 Icon ${size}: ${test.exists ? 'Existe' : 'Faltante'}
+                    </div>
+                `;
+            });
+            document.getElementById('icons-status').innerHTML = iconsHTML;
+
+            // Install Status
+            document.getElementById('install-status').innerHTML = `
+                <div class="status ${debug.install.meetsHTTPS ? 'pass' : 'fail'}">
+                    ✅ HTTPS: ${debug.install.meetsHTTPS ? 'Cumple' : 'Falta'}
+                </div>
+                <div class="status ${debug.install.hasManifest ? 'pass' : 'fail'}">
+                    ✅ Manifest: ${debug.install.hasManifest ? 'Cumple' : 'Falta'}
+                </div>
+                <div class="status ${debug.install.hasServiceWorker ? 'pass' : 'fail'}">
+                    ✅ Service Worker: ${debug.install.hasServiceWorker ? 'Cumple' : 'Falta'}
+                </div>
+                <div class="status ${debug.install.hasValidIcons ? 'pass' : 'fail'}">
+                    ✅ Icons: ${debug.install.hasValidIcons ? 'Cumple' : 'Falta'}
+                </div>
+                <div class="status ${debug.install.promptAvailable ? 'pass' : 'warning'}">
+                    📱 Install Prompt: ${debug.install.promptAvailable ? 'Disponible' : 'No Detectado'}
+                </div>
+            `;
+
+            // Solutions
+            let solutionsHTML = '';
+            debug.solutions.forEach(solution => {
+                const statusClass = solution.type === 'error' ? 'fail' :
+                    solution.type === 'warning' ? 'warning' :
+                        solution.type === 'success' ? 'pass' : 'info';
+                solutionsHTML += `
+                    <div class="status ${statusClass}">
+                        <strong>${solution.title}</strong><br>
+                        ${solution.description}<br>
+                        <em>Acción: ${solution.action}</em>
+                    </div>
+                `;
+            });
+            document.getElementById('solutions').innerHTML = solutionsHTML;
+        }
+
+        function testInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    console.log('User choice:', choiceResult);
+                    if (choiceResult.outcome === 'accepted') {
+                        alert('¡App instalada exitosamente!');
+                    } else {
+                        alert('Instalación cancelada por el usuario');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert('Install prompt no disponible. Ver soluciones recomendadas abajo.');
+            }
+        }
+
+        // Set user engagement for testing
+        localStorage.setItem('userEngagement', 'true');
+
+        // Run diagnostics when page loads
+        runDiagnostics();
+    </script>
+</body>
+
+</html>
