@@ -16,9 +16,63 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Loading Screen -->
+    <style>
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #6c5ce7 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-logo">✨ Estudio de Belleza</div>
+        <div class="loading-spinner"></div>
+    </div>
     <header>
         <nav class="navbar">
             <div class="nav-container">
@@ -157,22 +211,27 @@
         <section id="contact" class="contact">
             <div class="container">
                 <h2>Contactanos</h2>
+                <p class="subtitle">¡Estamos aquí para cuidar tu belleza! Encontranos o comunicate con nosotros</p>
                 <div class="contact-info">
                     <div class="contact-item">
-                        <h3>📍 Dirección</h3>
-                        <p>Av. Corrientes 1234<br>CABA, Buenos Aires</p>
+                        <span class="contact-emoji">📍</span>
+                        <h3>Nuestra Ubicación</h3>
+                        <p>Av. Corrientes 1234<br>CABA, Buenos Aires<br>Argentina</p>
                     </div>
                     <div class="contact-item">
-                        <h3>📞 Teléfono</h3>
-                        <p>(011) 4567-8901</p>
+                        <span class="contact-emoji">📞</span>
+                        <h3>Llamanos</h3>
+                        <p>(011) 4567-8901<br>WhatsApp: +54 9 11 4567-8901</p>
                     </div>
                     <div class="contact-item">
-                        <h3>✉️ Email</h3>
-                        <p>info@estudiodebelleza.com.ar</p>
+                        <span class="contact-emoji">✉️</span>
+                        <h3>Escribinos</h3>
+                        <p>info@estudiodebelleza.com.ar<br>reservas@estudiodebelleza.com.ar</p>
                     </div>
                     <div class="contact-item">
-                        <h3>🕒 Horarios</h3>
-                        <p>Lun-Vie: 9:00-19:00<br>Sáb: 9:00-17:00<br>Dom: Cerrado</p>
+                        <span class="contact-emoji">🕒</span>
+                        <h3>Nuestros Horarios</h3>
+                        <p>Lunes a Viernes: 9:00 - 19:00<br>Sábados: 9:00 - 17:00<br>Domingos: Cerrado</p>
                     </div>
                 </div>
             </div>
@@ -181,7 +240,16 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Estudio de Belleza. Todos los derechos reservados.</p>
+            <div class="footer-brand">✨ Estudio de Belleza</div>
+            <p>Transformando tu belleza con pasión y profesionalismo</p>
+            <div class="footer-social">
+                <a href="#" class="social-link" title="Instagram">📷</a>
+                <a href="#" class="social-link" title="Facebook">📘</a>
+                <a href="#" class="social-link" title="WhatsApp">💬</a>
+                <a href="#" class="social-link" title="Email">✉️</a>
+            </div>
+            <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">&copy; 2025 Estudio de Belleza. Todos los
+                derechos reservados.</p>
         </div>
     </footer>
 

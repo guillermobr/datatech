@@ -492,3 +492,124 @@ window.addEventListener('offline', () => {
     console.log('Gone offline');
     // Show offline message if needed
 });
+
+// Floating particles effect
+function createParticles() {
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles';
+    document.body.appendChild(particlesContainer);
+
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+
+        // Random position and properties
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+
+        // Random color variations
+        const colors = [
+            'rgba(255, 107, 157, 0.3)',
+            'rgba(108, 92, 231, 0.3)',
+            'rgba(248, 181, 0, 0.3)',
+            'rgba(255, 255, 255, 0.2)'
+        ];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        particlesContainer.appendChild(particle);
+
+        // Remove particle after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 15000);
+    }
+
+    // Create particles periodically
+    setInterval(createParticle, 2000);
+
+    // Create initial particles
+    for (let i = 0; i < 5; i++) {
+        setTimeout(createParticle, i * 400);
+    }
+}
+
+// Add smooth scrolling enhancement
+function smoothScrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+// Enhanced scroll animations
+function addScrollAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
+            }
+        });
+    }, observerOptions);
+
+    // Observe service cards and other elements
+    document.querySelectorAll('.service-card, .contact-item, .booking-form').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        observer.observe(el);
+    });
+}
+
+// Loading screen
+function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.remove();
+            }, 500);
+        }, 1500); // Show loading screen for 1.5 seconds
+    }
+}
+
+// Initialize enhanced features
+document.addEventListener('DOMContentLoaded', function () {
+    // Hide loading screen
+    hideLoadingScreen();
+
+    // Add particles effect after a delay
+    setTimeout(createParticles, 2000);
+
+    // Add scroll animations
+    setTimeout(addScrollAnimations, 1000);
+
+    // Enhance CTA button
+    const ctaButton = document.querySelector('.cta-button');
+    if (ctaButton && !ctaButton.querySelector('span')) {
+        ctaButton.innerHTML = '<span>' + ctaButton.textContent + '</span>';
+    }
+
+    // Add hover effects to service cards
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateY(-8px) rotate(1deg)';
+        });
+
+        card.addEventListener('mouseleave', function () {
+            if (!this.classList.contains('selected')) {
+                this.style.transform = '';
+            }
+        });
+    });
+});
