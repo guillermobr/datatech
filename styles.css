@@ -93,6 +93,49 @@ body {
     opacity: 0.9;
 }
 
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.install-app-button {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    animation: pulse 2s infinite;
+}
+
+.install-app-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 .cta-button {
     background: var(--accent-color);
     color: var(--white);
@@ -486,6 +529,17 @@ footer {
 
     .hero-content h2 {
         font-size: 2rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .install-app-button,
+    .cta-button {
+        width: 100%;
+        max-width: 280px;
     }
 
     .services-grid {

@@ -353,23 +353,48 @@ function setupPWAFeatures() {
     const installBanner = document.getElementById('install-banner');
     const installButton = document.getElementById('install-button');
     const dismissButton = document.getElementById('dismiss-button');
+    const heroInstallButton = document.getElementById('install-app-button');
 
-    // Show install banner if PWA can be installed
+    // Show install banner and hero button if PWA can be installed
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         installBanner.classList.remove('hidden');
+
+        // Show the hero install button
+        if (heroInstallButton) {
+            heroInstallButton.style.display = 'inline-block';
+        }
     });
 
-    // Handle install button click
+    // Handle install button click (banner)
     installButton.addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             deferredPrompt = null;
             installBanner.classList.add('hidden');
+            if (heroInstallButton) {
+                heroInstallButton.style.display = 'none';
+            }
         }
     });
+
+    // Handle hero install button click
+    if (heroInstallButton) {
+        heroInstallButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBanner.classList.add('hidden');
+                heroInstallButton.style.display = 'none';
+            } else {
+                // Show manual install instructions
+                showManualInstallInstructions();
+            }
+        });
+    }
 
     // Handle dismiss button click
     dismissButton.addEventListener('click', () => {
@@ -385,7 +410,76 @@ function setupPWAFeatures() {
     // Hide banner when app is installed
     window.addEventListener('appinstalled', () => {
         installBanner.classList.add('hidden');
+        if (heroInstallButton) {
+            heroInstallButton.style.display = 'none';
+        }
     });
+
+    // Show hero button for iOS or if no install prompt is available
+    setTimeout(() => {
+        if (!deferredPrompt && heroInstallButton) {
+            // Check if it's iOS or other browsers that need manual install
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.navigator.standalone === true;
+
+            if ((isIOS && !isStandalone) || !deferredPrompt) {
+                heroInstallButton.style.display = 'inline-block';
+            }
+        }
+    }, 2000);
+}
+
+function showManualInstallInstructions() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    let instructions = '';
+
+    if (isIOS) {
+        instructions = `
+            <h3>📱 Instalar en iOS:</h3>
+            <ol>
+                <li>Toca el botón <strong>Compartir</strong> 📤 (abajo en Safari)</li>
+                <li>Desplázate y toca <strong>"Añadir a pantalla de inicio"</strong></li>
+                <li>Confirma tocando <strong>"Añadir"</strong></li>
+            </ol>
+            <p><small>⚠️ Debe ser en Safari, no funciona en Chrome iOS</small></p>
+        `;
+    } else if (isAndroid) {
+        instructions = `
+            <h3>📱 Instalar en Android:</h3>
+            <ol>
+                <li>Toca el menú <strong>⋮</strong> (arriba a la derecha)</li>
+                <li>Busca <strong>"Agregar a pantalla de inicio"</strong></li>
+                <li>O <strong>"Instalar aplicación"</strong></li>
+                <li>Confirma la instalación</li>
+            </ol>
+        `;
+    } else {
+        instructions = `
+            <h3>💻 Instalar en Desktop:</h3>
+            <ol>
+                <li>Busca el ícono <strong>+</strong> en la barra de direcciones</li>
+                <li>O usa el menú del navegador</li>
+                <li>Selecciona <strong>"Instalar aplicación"</strong></li>
+            </ol>
+        `;
+    }
+
+    // Show instructions in a modal or alert
+    const modal = document.getElementById('success-modal');
+    const modalContent = modal.querySelector('.modal-content');
+    const confirmationDetails = document.getElementById('confirmation-details');
+
+    modalContent.querySelector('h2').innerHTML = '📱 ¿Cómo Instalar la App?';
+    modalContent.querySelector('p').innerHTML = 'Sigue estos pasos para instalar la app en tu dispositivo:';
+    confirmationDetails.innerHTML = `
+        <div style="text-align: left; margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+            ${instructions}
+        </div>
+    `;
+
+    modal.style.display = 'block';
 }
 
 // Offline support
